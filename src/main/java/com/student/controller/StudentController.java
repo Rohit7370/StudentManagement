@@ -35,6 +35,7 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable("id") Long id) {
         Optional<Student> student = studentService.getStudentById(id);
+        System.out.println("student fetched by id");
         return student.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
