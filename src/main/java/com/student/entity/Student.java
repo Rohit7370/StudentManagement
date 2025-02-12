@@ -14,7 +14,7 @@ public class Student {
     private String course;
 
     // One-to-one relationship with Address
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id")
     private Address address;
 
