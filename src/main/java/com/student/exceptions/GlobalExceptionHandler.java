@@ -15,3 +15,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 }
+
