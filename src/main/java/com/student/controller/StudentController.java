@@ -2,6 +2,7 @@ package com.student.controller;
 
 import com.student.entity.Student;
 import com.student.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class StudentController {
 
     // Create or Update student
     @PostMapping
-    public ResponseEntity<Student> createOrUpdateStudent(@RequestBody Student student) {
+    public ResponseEntity<Student> createOrUpdateStudent(@Valid @RequestBody Student student) {
         Student savedStudent = studentService.saveStudent(student);
         return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }

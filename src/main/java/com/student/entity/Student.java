@@ -1,7 +1,10 @@
 package com.student.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
 
 @Getter
 @Setter
@@ -16,7 +19,10 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "Name must not be empty...!!")
     private String name;
+    @Email(message = "Enter a valid email...!!")
     private String email;
     private String course;
 
