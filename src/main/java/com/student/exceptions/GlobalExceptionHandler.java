@@ -6,6 +6,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,14 @@ public class GlobalExceptionHandler {
                 .forEach(error->map.put(error.getField(), error.getDefaultMessage()));
 
         return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFoundException(NoHandlerFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Not Found");
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("message", "The requested resource was not found.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 }
 
