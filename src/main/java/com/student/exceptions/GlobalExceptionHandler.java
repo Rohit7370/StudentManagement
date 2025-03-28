@@ -6,13 +6,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
@@ -24,6 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String,String>> handleValidationException(MethodArgumentNotValidException exception){
+        System.out.println("inside Method Argument Exception handling class method....!!");
         Map<String, String> map=new HashMap<>();
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         fieldErrors
@@ -33,11 +35,22 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(NoHandlerFoundException ex) {
+        System.out.println("inside custom NoHandlerFounfException class created by me....!!");
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Not Found");
+        errorResponse.put("error", "Student Not Found");
         errorResponse.put("status", HttpStatus.NOT_FOUND.value());
-        errorResponse.put("message", "The requested resource was not found.");
+        errorResponse.put("message", "For the requested Student, resource was not found.");
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+    //Generic exception handling class
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        System.out.println("inside generic exception handling method to handle 404...!!");
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Generic Error....!!");
+        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.put("message", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 

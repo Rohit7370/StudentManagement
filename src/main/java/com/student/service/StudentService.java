@@ -20,12 +20,13 @@ public class StudentService {
     public Student saveStudent(Student student) {
 
         if (student.getAddress() == null || student.getResult()==null) {
-            throw new NullPointerException("Address and Result is required to save a student.");
+            throw new NullPointerException("Address and Result are required to save a student.");
         }
         Result result=student.getResult();
         result.setTotal(result.getHindi()+result.getEnglish()+result.getMaths());
         System.out.println("total marks is : "+result.getTotal());
-        result.setAverage(result.getTotal()/3.0);
+        double avg=result.getTotal()/3.0;
+        result.setAverage(Math.round(avg * 100) / 100.0);
         return studentRepository.save(student); // Saves both Student & Address due to CascadeType.ALL
     }
 
