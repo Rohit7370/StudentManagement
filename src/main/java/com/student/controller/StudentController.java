@@ -3,6 +3,10 @@ package com.student.controller;
 import com.student.entity.Student;
 import com.student.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +28,17 @@ public class StudentController {
 
     // Create or Update student
     @PostMapping
-    @Operation(
-            method = "CreateOrUpdateStudent",
-            summary = "Create a new Student",
-            description = "Add a new student to the system."
+    @Operation(method = "createOrUpdateStudent",
+            summary = "Create or Update a Student",
+            description = "Adds a new student to the system or updates an existing one.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Student successfully created",
+                            content = { @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Student.class)) }),
+                    @ApiResponse(responseCode = "400", description = "Invalid input - Validation failed",
+                            content = @Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            }
     )
     public ResponseEntity<Student> createOrUpdateStudent(@Valid @RequestBody Student student) {
         Student savedStudent = studentService.saveStudent(student);
@@ -36,10 +47,11 @@ public class StudentController {
 
     // Get all students
     @GetMapping
-    @Operation(method="getAllStudents",
+    @Operation(method = "getAllStudents",
             summary = "Get all students",
             description = "Fetch a list of all the students."
     )
+
     public ResponseEntity<List<Student>> getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return new ResponseEntity<>(students, HttpStatus.OK);
@@ -47,15 +59,15 @@ public class StudentController {
 
     // Get student by id
     @GetMapping("/{id}")
-    @Operation(method="getStudentById",
+    @Operation(method = "getStudentById",
             summary = "Get the student based on his id",
             description = "Fetch the student based on his id...!!."
     )
     public ResponseEntity<Student> getStudentById(@PathVariable("id") Long id) throws NoHandlerFoundException {
         Optional<Student> student = studentService.getStudentById(id);
         System.out.println("student fetched by id");
-        if(student.isEmpty()){
-            throw new NoHandlerFoundException("GET","/students/id",null);
+        if (student.isEmpty()) {
+            throw new NoHandlerFoundException("GET", "/students/id", null);
         }
         return student.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -63,7 +75,7 @@ public class StudentController {
 
     // Delete student by id
     @DeleteMapping("/{id}")
-    @Operation(method="deleteStudent",
+    @Operation(method = "deleteStudent",
             summary = "Delete the student",
             description = "Delete the student from database based on his id....!!"
     )
@@ -73,7 +85,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/result")
-    @Operation(method="getStudentResultById",
+    @Operation(method = "getStudentResultById",
             summary = "Get result of the student based on his id...!!",
             description = "Fetch a list of all the students."
     )
