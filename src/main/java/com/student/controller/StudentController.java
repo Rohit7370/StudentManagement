@@ -4,9 +4,11 @@ import com.student.entity.Student;
 import com.student.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/students")
@@ -31,6 +36,14 @@ public class StudentController {
     @Operation(method = "createOrUpdateStudent",
             summary = "Create or Update a Student",
             description = "Adds a new student to the system or updates an existing one.",
+            requestBody = @RequestBody(
+                    description = "Student object that needs to be added or updated",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Student.class)
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Student successfully created",
                             content = { @Content(mediaType = "application/json",
@@ -40,7 +53,7 @@ public class StudentController {
                     @ApiResponse(responseCode = "500", description = "Internal Server Error")
             }
     )
-    public ResponseEntity<Student> createOrUpdateStudent(@Valid @RequestBody Student student) {
+    public ResponseEntity<Student> createOrUpdateStudent(@Valid @org.springframework.web.bind.annotation.RequestBody Student student) {
         Student savedStudent = studentService.saveStudent(student);
         return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
@@ -51,7 +64,7 @@ public class StudentController {
             summary = "Get all students",
             description = "Fetch a list of all the students."
     )
-
+    @ApiResponse(responseCode = "200", description = "List of all students")
     public ResponseEntity<List<Student>> getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return new ResponseEntity<>(students, HttpStatus.OK);
@@ -63,7 +76,13 @@ public class StudentController {
             summary = "Get the student based on his id",
             description = "Fetch the student based on his id...!!."
     )
-    public ResponseEntity<Student> getStudentById(@PathVariable("id") Long id) throws NoHandlerFoundException {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the student"),
+            @ApiResponse(responseCode = "404", description = "Student not found")
+    })
+    public ResponseEntity<Student> getStudentById( @Parameter(description = "ID of the student", example = "1", required = true)
+            @PathVariable("id") Long id) throws NoHandlerFoundException {
+
         Optional<Student> student = studentService.getStudentById(id);
         System.out.println("student fetched by id");
         if (student.isEmpty()) {
@@ -92,6 +111,7 @@ public class StudentController {
     public ResponseEntity<Student> getStudentResultById(@PathVariable("id") Long id) {
         Optional<Student> student = studentService.getStudentResultById(id);
         System.out.println("student result fetched by id");
+        String s="abcdefght";
         return student.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
