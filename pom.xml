@@ -90,6 +90,16 @@
 <!--			<groupId>org.springframework.boot</groupId>-->
 <!--			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>-->
 <!--		</dependency>-->
+		<!-- OAuth2 Client for Google Sign-In -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<!-- For password encoding (BCrypt) -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
 
 	</dependencies>
 

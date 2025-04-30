@@ -46,6 +46,7 @@ public class StudentService {
     @Transactional
     public void deleteStudent(Long id) {
         if (studentRepository.existsById(id)) {
+            System.out.println("log to see whether student deleted or not...!!");
             studentRepository.deleteById(id);
         } else {
             throw new RuntimeException("Student with ID " + id + " not found.");

@@ -1,5 +1,6 @@
 package com.student.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,17 +17,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfig {
 
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
+    public UserDetailsService userDetailsService() {
+        UserDetails admin = User.withUsername("admin")
+                .password(passwordEncoder().encode("admin123"))
                 .roles("ADMIN")
                 .build();
 
-        UserDetails user = User.builder()
-                .username("user")
-                .password(passwordEncoder.encode("user123"))
+        UserDetails user = User.withUsername("user")
+                .password(passwordEncoder().encode("user123"))
                 .roles("USER")
                 .build();
 
@@ -41,19 +43,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Optional: disable for testing
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Allow GET requests to both USER and ADMIN
-                        .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("USER", "ADMIN")
-                        // Restrict POST, PUT, DELETE to ADMIN only
-                        .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
-                        // Any other request needs to be authenticated
+                        .requestMatchers("/", "/login**", "/error", "/oauth2/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/students").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/students/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/students/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Use Basic Authentication
-
+                .httpBasic(Customizer.withDefaults())
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .defaultSuccessUrl("/students", true)
+                );
         return http.build();
     }
 }

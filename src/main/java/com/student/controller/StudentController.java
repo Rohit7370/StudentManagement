@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -111,7 +113,6 @@ public class StudentController {
     public ResponseEntity<Student> getStudentResultById(@PathVariable("id") Long id) {
         Optional<Student> student = studentService.getStudentResultById(id);
         System.out.println("student result fetched by id");
-        String s="abcdefght";
         return student.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
