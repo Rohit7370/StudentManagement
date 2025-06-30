@@ -64,7 +64,7 @@ public class StudentController {
     @GetMapping
     @Operation(method = "getAllStudents",
             summary = "Get all students",
-            description = "Fetch a list of all the students."
+            description = "Fetch list of all the students."
     )
     @ApiResponse(responseCode = "200", description = "List of all students")
     public ResponseEntity<List<Student>> getAllStudents() {
